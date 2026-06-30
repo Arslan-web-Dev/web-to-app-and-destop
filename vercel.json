@@ -7,7 +7,9 @@
       "framework": "nextjs"
     },
     "api-gateway": {
-      "root": "services/api-gateway"
+      "root": "services/api-gateway",
+      "entrypoint": "src/main.ts",
+      "buildCommand": "npm run build"
     }
   },
   "rewrites": [

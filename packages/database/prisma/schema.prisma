@@ -1,0 +1,876 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// CORE USER & AUTHENTICATION
+// ============================================
+
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  password          String?   // null for OAuth users
+  name              String?
+  avatar            String?
+  emailVerified     Boolean   @default(false)
+  emailVerifiedAt   DateTime?
+  twoFactorEnabled  Boolean   @default(false)
+  twoFactorSecret   String?
+  mfaBackupCodes    String[]
+
+  // Relations
+  accounts          Account[]
+  sessions          Session[]
+  organizations     OrganizationMember[]
+  teams             TeamMember[]
+  projects          Project[]
+  apiKeys           ApiKey[]
+  subscriptions     Subscription[]
+  invoices          Invoice[]
+  payments          Payment[]
+  aiCredits         AICredit[]
+  notifications     Notification[]
+  activityLogs      ActivityLog[]
+  auditLogs         AuditLog[]
+  devices           Device[]
+
+  // Metadata
+  role              UserRole      @default(USER)
+  status            UserStatus    @default(ACTIVE)
+  plan              PlanType      @default(FREE)
+  stripeCustomerId  String?       // Stripe customer ID for billing
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+
+  @@index([email])
+  @@index([status])
+  @@index([plan])
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ============================================
+// ORGANIZATIONS & TEAMS
+// ============================================
+
+model Organization {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  logo        String?
+  website     String?
+
+  members     OrganizationMember[]
+  teams       Team[]
+  projects    Project[]
+  subscriptions Subscription[]
+
+  plan        PlanType    @default(FREE)
+  status      OrgStatus   @default(ACTIVE)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([slug])
+  @@map("organizations")
+}
+
+model OrganizationMember {
+  id             String @id @default(cuid())
+  organizationId String
+  userId         String
+  role           OrgRole @default(MEMBER)
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  joinedAt     DateTime @default(now())
+
+  @@unique([organizationId, userId])
+  @@map("organization_members")
+}
+
+model Team {
+  id             String @id @default(cuid())
+  name           String
+  description    String?
+  organizationId String
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  members        TeamMember[]
+  projects       Project[]
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("teams")
+}
+
+model TeamMember {
+  id     String @id @default(cuid())
+  teamId String
+  userId String
+  role   TeamRole @default(MEMBER)
+
+  team   Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  joinedAt DateTime @default(now())
+
+  @@unique([teamId, userId])
+  @@map("team_members")
+}
+
+// ============================================
+// PROJECTS & WEBSITE IMPORTS
+// ============================================
+
+model Project {
+  id              String @id @default(cuid())
+  name            String
+  description     String?
+  slug            String @unique
+
+  // Source
+  sourceType      SourceType
+  websiteUrl      String?
+  githubUrl       String?
+  zipFileUrl      String?
+  sourceCodePath  String?
+
+  // Relations
+  ownerId         String
+  owner           User     @relation(fields: [ownerId], references: [id])
+  organizationId  String?
+  organization    Organization? @relation(fields: [organizationId], references: [id])
+  teamId          String?
+  team            Team?     @relation(fields: [teamId], references: [id])
+
+  // Analysis
+  analysis        Analysis?
+  recommendations Recommendation[]
+
+  // Generated Apps
+  generatedApps   GeneratedApp[]
+  buildJobs       BuildJob[]
+
+  // Settings
+  settings        Json?    @default("{}")
+
+  status          ProjectStatus @default(IMPORTING)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([ownerId])
+  @@index([status])
+  @@map("projects")
+}
+
+// ============================================
+// AI ANALYSIS
+// ============================================
+
+model Analysis {
+  id                String @id @default(cuid())
+  projectId         String @unique
+  project           Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  // Framework Detection
+  detectedFramework String?
+  frameworkVersion  String?
+  frameworkConfidence Float?
+
+  // Structure
+  pages             Json?  // Array of detected pages
+  routes            Json?  // Array of routes
+  navigation        Json?  // Navigation structure
+
+  // Features
+  hasAuth           Boolean @default(false)
+  authType          String?
+  hasDatabase       Boolean @default(false)
+  databaseType      String?
+  hasApi            Boolean @default(false)
+  apiType           String? // REST, GraphQL, etc.
+  hasPayment        Boolean @default(false)
+  paymentProvider   String?
+  hasAnalytics      Boolean @default(false)
+  analyticsProvider String?
+  hasCMS            Boolean @default(false)
+  cmsType           String?
+  hasAdminPanel     Boolean @default(false)
+
+  // UI Analysis
+  components        Json?  // Detected UI components
+  theme             Json?  // Theme colors, fonts
+  hasDarkMode       Boolean @default(false)
+  isResponsive      Boolean @default(false)
+
+  // Quality Scores
+  performanceScore  Float?
+  accessibilityScore Float?
+  seoScore          Float?
+  securityScore     Float?
+
+  // Issues
+  brokenLinks       Json?
+  missingImages     Json?
+  largeAssets       Json?
+  unusedCode        Json?
+  securityRisks     Json?
+
+  // Raw Data
+  rawAnalysis       Json?  // Complete raw analysis data
+
+  completedAt       DateTime?
+  createdAt         DateTime @default(now())
+
+  @@map("analyses")
+}
+
+model Recommendation {
+  id          String @id @default(cuid())
+  projectId   String
+  project     Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  category    RecCategory
+  severity    RecSeverity
+  title       String
+  description String
+  suggestion  String
+  codeExample String? @db.Text
+
+  isApplied   Boolean @default(false)
+  appliedAt   DateTime?
+
+  createdAt   DateTime @default(now())
+
+  @@index([projectId])
+  @@map("recommendations")
+}
+
+// ============================================
+// GENERATED APPLICATIONS
+// ============================================
+
+model GeneratedApp {
+  id            String @id @default(cuid())
+  projectId     String
+  project       Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  name          String
+  description   String?
+
+  // Platform
+  platform      PlatformType
+  framework     String?     // Tauri, Electron, Kotlin, SwiftUI, etc.
+
+  // Features
+  features      Json?       // Enabled native features
+
+  // Code
+  sourceCodeUrl String?     // S3 URL to generated source
+
+  // Status
+  status        AppStatus @default(GENERATING)
+
+  // Builds
+  builds        BuildJob[]
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([platform])
+  @@map("generated_apps")
+}
+
+// ============================================
+// BUILD SYSTEM
+// ============================================
+
+model BuildJob {
+  id              String @id @default(cuid())
+
+  projectId       String
+  project         Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  generatedAppId  String?
+  generatedApp    GeneratedApp? @relation(fields: [generatedAppId], references: [id])
+
+  // Build Config
+  platform        PlatformType
+  format          BuildFormat
+  version         String
+  buildNumber     Int
+
+  // Features
+  features        Json?
+
+  // Status
+  status          BuildStatus @default(QUEUED)
+  progress        Float       @default(0)
+
+  // Logs
+  logs            BuildLog[]
+
+  // Artifacts
+  artifactUrl     String?     // S3 URL
+  artifactSize    Int?        // Bytes
+  checksum        String?
+
+  // Timestamps
+  queuedAt        DateTime @default(now())
+  startedAt       DateTime?
+  completedAt     DateTime?
+  failedAt        DateTime?
+
+  // Error
+  errorMessage    String?
+  errorStack      String? @db.Text
+
+  // Cost
+  buildCost       Float?      // AI credits consumed
+
+  @@index([projectId])
+  @@index([status])
+  @@index([queuedAt])
+  @@map("build_jobs")
+}
+
+model BuildLog {
+  id        String @id @default(cuid())
+  buildId   String
+  build     BuildJob @relation(fields: [buildId], references: [id], onDelete: Cascade)
+
+  level     LogLevel
+  message   String
+  metadata  Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([buildId])
+  @@map("build_logs")
+}
+
+// ============================================
+// DOWNLOADS
+// ============================================
+
+model Download {
+  id          String @id @default(cuid())
+  buildId     String
+
+  // User info
+  userId      String?
+  ipAddress   String?
+  userAgent   String?
+
+  // Stats
+  downloadedAt DateTime @default(now())
+
+  @@map("downloads")
+}
+
+// ============================================
+// BILLING & SUBSCRIPTIONS
+// ============================================
+
+model Subscription {
+  id                   String @id @default(cuid())
+
+  userId               String?
+  user                 User? @relation(fields: [userId], references: [id])
+  organizationId       String?
+  organization         Organization? @relation(fields: [organizationId], references: [id])
+
+  // Plan
+  plan                 PlanType
+  status               SubscriptionStatus @default(ACTIVE)
+
+  // Billing
+  stripeSubscriptionId String? @unique
+  stripeCustomerId     String?
+
+  // Period
+  currentPeriodStart   DateTime
+  currentPeriodEnd     DateTime
+  cancelAtPeriodEnd    Boolean @default(false)
+
+  // Usage
+  usageLimits          Json?   // Project limits, build limits, etc.
+  currentUsage         Json?   // Current month usage
+
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@map("subscriptions")
+}
+
+model Invoice {
+  id              String @id @default(cuid())
+  userId          String
+  user            User @relation(fields: [userId], references: [id])
+
+  stripeInvoiceId String? @unique
+
+  amount          Float
+  currency        String @default("USD")
+  status          InvoiceStatus @default(PENDING)
+
+  description     String?
+  metadata        Json?
+
+  paidAt          DateTime?
+  createdAt       DateTime @default(now())
+
+  @@index([userId])
+  @@map("invoices")
+}
+
+model Payment {
+  id              String @id @default(cuid())
+  userId          String
+  user            User @relation(fields: [userId], references: [id])
+
+  stripePaymentId String? @unique
+
+  amount          Float
+  currency        String @default("USD")
+  status          PaymentStatus @default(PENDING)
+
+  description     String?
+  metadata        Json?
+
+  createdAt       DateTime @default(now())
+
+  @@index([userId])
+  @@map("payments")
+}
+
+// ============================================
+// AI CREDITS
+// ============================================
+
+model AICredit {
+  id          String @id @default(cuid())
+  userId      String
+  user        User @relation(fields: [userId], references: [id])
+
+  amount      Float    // Credits added/subtracted
+  balance     Float    // Balance after transaction
+
+  type        CreditType
+  description String?
+
+  // Reference
+  buildId     String?
+  projectId   String?
+
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@map("ai_credits")
+}
+
+// ============================================
+// NOTIFICATIONS
+// ============================================
+
+model Notification {
+  id          String @id @default(cuid())
+  userId      String
+  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type        NotificationType
+  title       String
+  message     String
+  data        Json?       // Additional context
+
+  isRead      Boolean @default(false)
+  readAt      DateTime?
+
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([isRead])
+  @@map("notifications")
+}
+
+// ============================================
+// API KEYS
+// ============================================
+
+model ApiKey {
+  id          String @id @default(cuid())
+  userId      String
+  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name        String
+  keyHash     String      // Hashed key
+  keyPrefix   String      // First 8 chars for display
+
+  scopes      String[]    // Allowed scopes
+
+  lastUsedAt  DateTime?
+  expiresAt   DateTime?
+
+  isRevoked   Boolean @default(false)
+  revokedAt   DateTime?
+
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@map("api_keys")
+}
+
+// ============================================
+// LOGS & AUDIT
+// ============================================
+
+model ActivityLog {
+  id          String @id @default(cuid())
+  userId      String
+  user        User @relation(fields: [userId], references: [id])
+
+  action      String
+  entityType  String
+  entityId    String?
+  metadata    Json?
+
+  ipAddress   String?
+  userAgent   String?
+
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@map("activity_logs")
+}
+
+model AuditLog {
+  id          String @id @default(cuid())
+  userId      String?
+  user        User? @relation(fields: [userId], references: [id])
+
+  action      AuditAction
+  resource    String
+  resourceId  String?
+
+  oldValue    Json?
+  newValue    Json?
+
+  ipAddress   String?
+  userAgent   String?
+
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@map("audit_logs")
+}
+
+// ============================================
+// DEVICES
+// ============================================
+
+model Device {
+  id          String @id @default(cuid())
+  userId      String
+  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name        String?
+  type        DeviceType
+  os          String?
+  osVersion   String?
+  browser     String?
+  browserVersion String?
+
+  fingerprint String?     // Device fingerprint
+
+  lastActiveAt DateTime?
+
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@map("devices")
+}
+
+// ============================================
+// INTEGRATIONS
+// ============================================
+
+model Integration {
+  id          String @id @default(cuid())
+
+  name        String
+  type        IntegrationType
+  provider    String
+
+  // Credentials (encrypted)
+  credentials Json?
+
+  // Settings
+  settings    Json?
+
+  isActive    Boolean @default(true)
+
+  lastSyncAt  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("integrations")
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum UserRole {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  PENDING_VERIFICATION
+}
+
+enum OrgRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum TeamRole {
+  LEAD
+  MEMBER
+  VIEWER
+}
+
+enum OrgStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum PlanType {
+  FREE
+  STARTER
+  PROFESSIONAL
+  BUSINESS
+  ENTERPRISE
+}
+
+enum SourceType {
+  WEBSITE_URL
+  GITHUB_REPO
+  SOURCE_CODE
+  ZIP_UPLOAD
+}
+
+enum ProjectStatus {
+  IMPORTING
+  ANALYZING
+  ANALYZED
+  GENERATING
+  READY
+  BUILDING
+  COMPLETED
+  FAILED
+}
+
+enum PlatformType {
+  DESKTOP_WINDOWS
+  DESKTOP_MACOS
+  DESKTOP_LINUX
+  ANDROID
+  IOS
+  PWA
+}
+
+enum AppStatus {
+  GENERATING
+  READY
+  BUILDING
+  PUBLISHED
+  FAILED
+}
+
+enum BuildFormat {
+  EXE
+  MSI
+  APP
+  DMG
+  APPIMAGE
+  SNAP
+  DEB
+  APK
+  AAB
+  IPA
+  DOCKER
+  SOURCE
+}
+
+enum BuildStatus {
+  QUEUED
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+  RETRYING
+}
+
+enum LogLevel {
+  DEBUG
+  INFO
+  WARN
+  ERROR
+  FATAL
+}
+
+enum RecCategory {
+  PERFORMANCE
+  UI
+  UX
+  ACCESSIBILITY
+  SECURITY
+  SEO
+  CODE
+  MOBILE
+  DESKTOP
+}
+
+enum RecSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  INACTIVE
+  CANCELLED
+  PAST_DUE
+  UNPAID
+  TRIALING
+}
+
+enum InvoiceStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum CreditType {
+  PURCHASE
+  USAGE
+  BONUS
+  REFUND
+  ADJUSTMENT
+}
+
+enum NotificationType {
+  BUILD_COMPLETE
+  BUILD_FAILED
+  ANALYSIS_COMPLETE
+  PAYMENT_SUCCESS
+  PAYMENT_FAILED
+  SUBSCRIPTION_EXPIRING
+  SECURITY_ALERT
+  SYSTEM
+}
+
+enum AuditAction {
+  CREATE
+  READ
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  EXPORT
+  IMPORT
+  BUILD
+  DEPLOY
+}
+
+enum DeviceType {
+  DESKTOP
+  MOBILE
+  TABLET
+  UNKNOWN
+}
+
+enum IntegrationType {
+  GITHUB
+  GITLAB
+  BITBUCKET
+  SLACK
+  DISCORD
+  STRIPE
+  AWS
+  AZURE
+  GCP
+}

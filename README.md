@@ -27,38 +27,56 @@ The **Universal Web to Native** platform is a production-grade full‑stack mono
 
 ## Frontend Portal Pages & Routes
 
-The Next.js web application is located under `apps/web` and includes the following fully routed and functional dashboard pages:
+The Next.js web application is located under `apps/web` and includes the following fully routed and functional pages:
 
-### Authentication Pages
-* **Login (`/login`)** — [login/page.tsx](file:///d:/github%20project/web-to-app-and-destop/apps/web/src/app/(auth)/login/page.tsx)
-  * Supports email/password credentials authentication and OAuth authentication via Google.
-  * Dynamically queries user state and session cookies.
+### Public Website & Authentication
+* **Landing Page (`/`)** — `/app/page.tsx`
+* **Features (`/features`)** — `/app/features/page.tsx`
+* **Pricing (`/pricing`)** — `/app/pricing/page.tsx`
+* **Documentation (`/docs`)** — `/app/docs/page.tsx`
+* **Contact (`/contact`)** — `/app/contact/page.tsx`
+* **Auth Pages** — Login, Register, Forgot Password, Reset Password, Verify Email located in `/app/(auth)/...`
 
-### Dashboard Pages (Protected Routes)
-All pages are located under the dashboard routing context:
-* **Main Dashboard (`/dashboard`)** — [dashboard/page.tsx](file:///d:/github%20project/web-to-app-and-destop/apps/web/src/app/dashboard/page.tsx)
-  * Visualizes platform stats (total projects, builds, completed/pending compilations).
-  * Lists recent active projects, active build jobs, quick actions, and recent user notification activity logs.
-* **Projects Manager (`/dashboard/projects`)** — [dashboard/projects/page.tsx](file:///d:/github%20project/web-to-app-and-destop/apps/web/src/app/dashboard/projects/page.tsx)
-  * View, filter, and search active projects.
-  * Open the **Create Project Dialog** to scan a new website URL, upload a project zip, or connect a GitHub repository.
-* **Project Details (`/dashboard/projects/[projectId]`)** — [dashboard/projects/[projectId]/page.tsx](file:///d:/github%20project/web-to-app-and-destop/apps/web/src/app/dashboard/projects/%5BprojectId%5D/page.tsx)
-  * Detailed breakdown of a specific project's parameters.
-  * Real-time build history tracking for iOS, Android, and Desktop platforms.
-  * Direct artifact download buttons for compiled executables.
-* **AI Analysis Report (`/dashboard/projects/[projectId]/analysis`)** — [dashboard/projects/[projectId]/analysis/page.tsx](file:///d:/github%20project/web-to-app-and-destop/apps/web/src/app/dashboard/projects/%5BprojectId%5D/analysis/page.tsx)
-  * Comprehensive AI audit logs showing framework indicators, layout responsiveness, deep linking setup, and custom PWA manifests.
-  * Highlights automated AI-generated security scanning and architecture recommendations.
-* **Builds History (`/dashboard/builds`)** — [dashboard/builds/page.tsx](file:///d:/github%20project/web-to-app-and-destop/apps/web/src/app/dashboard/builds/page.tsx)
-  * Global history of all native package compilation outputs, tracking platform targets, compilation durations, progress ratios, and current build status.
-* **Team Management (`/dashboard/team`)** — [dashboard/team/page.tsx](file:///d:/github%20project/web-to-app-and-destop/apps/web/src/app/dashboard/team/page.tsx)
-  * View collaborative members in the organization, assign roles (Owner, Admin, Developer), check invitation statuses, and invite new members.
-* **Billing & Quotas (`/dashboard/billing`)** — [dashboard/billing/page.tsx](file:///d:/github%20project/web-to-app-and-destop/apps/web/src/app/dashboard/billing/page.tsx)
-  * Displays details on active subscription tiers (Professional/Business/Enterprise).
-  * Monitored quota usages for build credits, AI scanners, and project counts.
-  * Manage active credit cards and upgrade subscription plans.
-* **Account Settings (`/dashboard/settings`)** — [dashboard/settings/page.tsx](file:///d:/github%20project/web-to-app-and-destop/apps/web/src/app/dashboard/settings/page.tsx)
-  * Update general user profile details, change login passwords, toggles, and generate API developer tokens for pipeline scripts.
+### Core Dashboard
+* **Main Dashboard (`/dashboard`)** — `/app/dashboard/page.tsx`
+* **Projects Manager (`/dashboard/projects`)** — `/app/dashboard/projects/page.tsx`
+* **Create Project (`/dashboard/projects/new`)** — `/app/dashboard/projects/new/page.tsx`
+* **Website Import Wizard (`/dashboard/import`)** — `/app/dashboard/import/page.tsx`
+* **Downloads Center (`/dashboard/downloads`)** — `/app/dashboard/downloads/page.tsx`
+* **Notifications (`/dashboard/notifications`)** — `/app/dashboard/notifications/page.tsx`
+* **API Keys Management (`/dashboard/api-keys`)** — `/app/dashboard/api-keys/page.tsx`
+
+### AI Engine Suite
+* **AI Dashboard (`/dashboard/ai`)** — `/app/dashboard/ai/page.tsx`
+* **Website Scanner (`/dashboard/ai/scanner`)** — `/app/dashboard/ai/scanner/page.tsx`
+* **Framework Detection (`/dashboard/ai/framework`)** — `/app/dashboard/ai/framework/page.tsx`
+* **UI Analysis (`/dashboard/ai/ui-analysis`)** — `/app/dashboard/ai/ui-analysis/page.tsx`
+* **API Detection (`/dashboard/ai/api-detection`)** — `/app/dashboard/ai/api-detection/page.tsx`
+* **Security Scan (`/dashboard/ai/security`)** — `/app/dashboard/ai/security/page.tsx`
+* **SEO Analysis (`/dashboard/ai/seo`)** — `/app/dashboard/ai/seo/page.tsx`
+* **Performance Analysis (`/dashboard/ai/performance`)** — `/app/dashboard/ai/performance/page.tsx`
+* **Accessibility Analysis (`/dashboard/ai/accessibility`)** — `/app/dashboard/ai/accessibility/page.tsx`
+* **AI Recommendations (`/dashboard/ai/recommendations`)** — `/app/dashboard/ai/recommendations/page.tsx`
+
+### App Generators
+* **Android Settings, Preview & Build** — `/app/dashboard/generators/android/...` (page, preview, build, history)
+* **iOS Settings, Preview & Build** — `/app/dashboard/generators/ios/...` (page, preview, build, history)
+* **Desktop Settings, Preview & Build** — `/app/dashboard/generators/desktop/...` (page, preview, build, history)
+
+### Build Infrastructure
+* **Build System Overview (`/dashboard/build-system`)** — `/app/dashboard/build-system/page.tsx`
+* **Build Queue (`/dashboard/build-system/queue`)** — `/app/dashboard/build-system/queue/page.tsx`
+* **System Logs (`/dashboard/build-system/logs`)** — `/app/dashboard/build-system/logs/page.tsx`
+* **Artifacts Storage (`/dashboard/build-system/artifacts`)** — `/app/dashboard/build-system/artifacts/page.tsx`
+
+### Billing & Team Management
+* **Subscription Management (`/dashboard/billing/subscription`)** — `/app/dashboard/billing/subscription/page.tsx`
+* **Invoices (`/dashboard/billing/invoices`)** — `/app/dashboard/billing/invoices/page.tsx`
+* **Payment Methods (`/dashboard/billing/payment-methods`)** — `/app/dashboard/billing/payment-methods/page.tsx`
+* **Usage & Limits (`/dashboard/billing/usage`)** — `/app/dashboard/billing/usage/page.tsx`
+* **Team Members (`/dashboard/team`)** — `/app/dashboard/team/page.tsx`
+* **Roles & Permissions (`/dashboard/team/roles`)** — `/app/dashboard/team/roles/page.tsx`
+* **Audit Logs (`/dashboard/team/audit`)** — `/app/dashboard/team/audit/page.tsx`
 
 ## Architecture Diagram
 ```mermaid

@@ -30,12 +30,12 @@ function DropdownMenuTrigger({
   children: React.ReactNode
 }) {
   const { setOpen, open } = React.useContext(DropdownMenuContext)
-  const child = children as React.ReactElement<any>
-  if (asChild && React.isValidElement(child)) {
+  if (asChild && React.isValidElement(children)) {
+    const child = children as React.ReactElement<React.HTMLAttributes<HTMLElement>>
     return React.cloneElement(child, {
-      onClick: (...args: any[]) => {
+      onClick: (...args: unknown[]) => {
         setOpen(!open)
-        if (child.props.onClick) child.props.onClick(...args)
+        if (child.props.onClick) (child.props.onClick as (...a: unknown[]) => void)(...args)
       },
     })
   }

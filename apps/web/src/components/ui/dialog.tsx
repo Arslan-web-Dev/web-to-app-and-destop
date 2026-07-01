@@ -27,12 +27,12 @@ function Dialog({ open = false, onOpenChange = () => {}, children }: DialogProps
 
 function DialogTrigger({ asChild, children }: { asChild?: boolean; children: React.ReactNode }) {
   const { onOpenChange } = React.useContext(DialogContext)
-  const child = children as React.ReactElement<any>
-  if (asChild && React.isValidElement(child)) {
+  if (asChild && React.isValidElement(children)) {
+    const child = children as React.ReactElement<React.HTMLAttributes<HTMLElement>>
     return React.cloneElement(child, {
-      onClick: (...args: any[]) => {
+      onClick: (...args: unknown[]) => {
         onOpenChange(true)
-        if (child.props.onClick) child.props.onClick(...args)
+        if (child.props.onClick) (child.props.onClick as (...a: unknown[]) => void)(...args)
       },
     })
   }

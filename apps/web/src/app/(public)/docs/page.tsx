@@ -1,129 +1,76 @@
 'use client'
 
-import React, { useState } from 'react'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Search, BookOpen, Terminal, Code, Cpu, ExternalLink, ArrowRight } from 'lucide-react'
-import Link from 'next/link'
-
-interface DocSection {
-  title: string
-  description: string
-  icon: any
-  links: { label: string; href: string }[]
-}
+import { BookOpen, Terminal, Code, Settings } from 'lucide-react'
 
 export default function DocsPage() {
-  const [searchQuery, setSearchQuery] = useState('')
-
-  const sections: DocSection[] = [
-    {
-      title: 'Getting Started',
-      description: 'Learn the core concepts and compile your first native app container within 5 minutes.',
-      icon: BookOpen,
-      links: [
-        { label: 'Introduction to Web-to-Native', href: '#intro' },
-        { label: 'System Prerequisites', href: '#prerequisites' },
-        { label: 'Basic App Configuration', href: '#config' },
-      ],
-    },
-    {
-      title: 'API Reference',
-      description: 'Integrate device camera, geolocation, biometric login, and push token hooks.',
-      icon: Code,
-      links: [
-        { label: 'JavaScript Interface SDK', href: '#sdk' },
-        { label: 'Native Event Bindings', href: '#events' },
-        { label: 'Push Notification Headers', href: '#push' },
-      ],
-    },
-    {
-      title: 'User Guide & Compliance',
-      description: 'Check assets specifications, splash screen sizes, and app store compliance standards.',
-      icon: Cpu,
-      links: [
-        { label: 'iOS App Store Guidelines', href: '#ios' },
-        { label: 'Google Play Release Checklist', href: '#android' },
-        { label: 'Performance Optimization Tips', href: '#performance' },
-      ],
-    },
+  const categories = [
+      {
+          icon: BookOpen,
+          title: 'Getting Started',
+          desc: 'Quick start guide to convert your first web app.',
+          links: ['Introduction to UWTN', 'System Requirements', 'Your First Build']
+      },
+      {
+          icon: Settings,
+          title: 'Configuration',
+          desc: 'Learn how to configure app metadata and permissions.',
+          links: ['Android Manifest Guide', 'iOS Info.plist Config', 'Desktop Window Settings']
+      },
+      {
+          icon: Code,
+          title: 'Native Bridge API',
+          desc: 'Access native device features using Javascript.',
+          links: ['Camera API', 'Push Notifications', 'Geolocation & GPS']
+      },
+      {
+          icon: Terminal,
+          title: 'CLI & Automation',
+          desc: 'Integrate build steps into your CI/CD pipelines.',
+          links: ['CLI Installation', 'GitHub Actions Setup', 'Automated App Store Deploy']
+      }
   ]
 
-  const filteredSections = sections.filter(
-    (sec) =>
-      sec.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      sec.description.toLowerCase().includes(searchQuery.toLowerCase())
-  )
-
   return (
-    <div className="space-y-16 py-10">
-      {/* Hero Header */}
-      <section className="text-center space-y-6 max-w-2xl mx-auto">
-        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">Documentation Portal</h1>
-        <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-          Everything you need to compile, configure, and publish your web apps to native stores.
-        </p>
-
-        {/* Search Input */}
-        <div className="relative max-w-md mx-auto">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search guides, SDK references..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 border-white/10 bg-white/5 focus:ring-secondary"
-          />
-        </div>
-      </section>
-
-      {/* Grid of Sections */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {filteredSections.map((section, index) => (
-          <div key={index} className="glass-panel border rounded-2xl p-8 shadow-sm flex flex-col justify-between hover:border-primary/30 transition-colors duration-300">
-            <div className="space-y-4">
-              <div className="p-3 bg-primary/10 text-primary rounded-lg w-fit">
-                <section.icon className="h-6 w-6" />
-              </div>
-              <h3 className="text-xl font-bold text-white">{section.title}</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">{section.description}</p>
-              
-              <ul className="space-y-2 pt-4 border-t border-white/5">
-                {section.links.map((link, idx) => (
-                  <li key={idx}>
-                    <a href={link.href} className="text-xs text-muted-foreground hover:text-secondary flex items-center gap-1.5 transition-colors">
-                      <ArrowRight className="h-3 w-3 shrink-0" />
-                      <span>{link.label}</span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="pt-6">
-              <Button size="sm" variant="outline" className="w-full border-white/10 hover:bg-white/5 text-xs">
-                Explore Section
-              </Button>
-            </div>
+    <div className="min-h-screen pt-24 pb-20 px-4">
+      <div className="max-w-5xl mx-auto space-y-12">
+          
+          <div className="space-y-4">
+              <h1 className="text-4xl font-bold tracking-tight">Documentation</h1>
+              <p className="text-xl text-muted-foreground">Everything you need to build, configure, and deploy your native applications.</p>
           </div>
-        ))}
-      </section>
 
-      {/* Quick Install Code Block */}
-      <section className="max-w-3xl mx-auto glass-panel border rounded-2xl p-8 space-y-4 shadow-premium-glow">
-        <div className="flex items-center gap-3">
-          <Terminal className="h-5 w-5 text-secondary" />
-          <h3 className="font-bold text-white text-base">Quick CLI Installation</h3>
-        </div>
-        <p className="text-xs text-muted-foreground">
-          Download our compiler CLI helper directly from npm to trigger local builds:
-        </p>
-        <pre className="p-4 rounded-lg bg-black/60 border border-white/5 text-xs text-secondary font-mono overflow-x-auto leading-relaxed">
-{`# Install CLI helper globally
-npm install -g @uwtn/cli
+          <div className="relative">
+              <input 
+                  type="text" 
+                  placeholder="Search documentation (e.g., 'Push Notifications')..." 
+                  className="w-full h-14 bg-background/50 border border-white/20 rounded-xl px-6 text-lg outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-premium-glow"
+              />
+          </div>
 
-# Run setup scans on your website project folder
-uwtn init`}
-        </pre>
-      </section>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {categories.map((cat, i) => (
+                  <div key={i} className="glass-panel p-8 rounded-2xl border-white/10 hover:border-white/20 transition-colors group">
+                      <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 group-hover:text-primary transition-colors">
+                          <cat.icon className="h-6 w-6" />
+                      </div>
+                      <h2 className="text-2xl font-bold mb-2">{cat.title}</h2>
+                      <p className="text-muted-foreground mb-6">{cat.desc}</p>
+                      
+                      <ul className="space-y-3">
+                          {cat.links.map((link, j) => (
+                              <li key={j}>
+                                  <a href="#" className="text-sm font-medium text-gray-300 hover:text-primary flex items-center gap-2 transition-colors">
+                                      <div className="w-1.5 h-1.5 rounded-full bg-primary/50" />
+                                      {link}
+                                  </a>
+                              </li>
+                          ))}
+                      </ul>
+                  </div>
+              ))}
+          </div>
+
+      </div>
     </div>
   )
 }

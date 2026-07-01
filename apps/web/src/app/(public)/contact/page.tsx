@@ -1,164 +1,98 @@
 'use client'
 
-import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { toast } from '@/components/ui/use-toast'
-import { Mail, MessageSquare, Compass, Send, CheckCircle2 } from 'lucide-react'
+import { Textarea } from '@/components/ui/textarea'
+import { Mail, MessageSquare, MapPin, Send } from 'lucide-react'
 
 export default function ContactPage() {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [subject, setSubject] = useState('')
-  const [message, setMessage] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [success, setSuccess] = useState(false)
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!name || !email || !message) return
-    setIsSubmitting(true)
-    
-    // Simulate API request
-    setTimeout(() => {
-      setIsSubmitting(false)
-      setSuccess(true)
-      toast({
-        title: 'Message Sent',
-        description: 'Thank you! Your message has been sent successfully.',
-      })
-      setName('')
-      setEmail('')
-      setSubject('')
-      setMessage('')
-    }, 1500)
-  }
-
   return (
-    <div className="space-y-24 py-10">
-      {/* Header */}
-      <section className="text-center space-y-6 max-w-xl mx-auto">
-        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight">Contact Our Team</h1>
-        <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-          Need support, enterprise billing adjustments, or custom platform wrapper SDK consulting? Drop us a line.
-        </p>
-      </section>
-
-      {/* Grid */}
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start max-w-5xl mx-auto">
-        {/* Contact Form */}
-        <div className="lg:col-span-2 glass-panel border rounded-2xl p-8 shadow-sm space-y-6">
-          {success ? (
-            <div className="py-12 text-center space-y-4 animate-in zoom-in-95 duration-200">
-              <div className="p-3 bg-secondary/15 rounded-full text-secondary w-fit mx-auto">
-                <CheckCircle2 className="h-8 w-8" />
-              </div>
-              <h3 className="text-xl font-bold text-white">Thank You!</h3>
-              <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-                Your message has been sent to our customer care team. We will review it and get back to you within 24 business hours.
-              </p>
-              <Button onClick={() => setSuccess(false)} variant="outline" className="border-white/10 hover:bg-white/5">
-                Send another message
-              </Button>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="contact-name">Full Name</Label>
-                  <Input
-                    id="contact-name"
-                    placeholder="John Doe"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="contact-email">Email Address</Label>
-                  <Input
-                    id="contact-email"
-                    type="email"
-                    placeholder="john@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="contact-subject">Subject</Label>
-                <Input
-                  id="contact-subject"
-                  placeholder="How can we help?"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="contact-message">Message</Label>
-                <textarea
-                  id="contact-message"
-                  rows={5}
-                  required
-                  placeholder="Type your message here..."
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                />
-              </div>
-              <Button type="submit" disabled={isSubmitting} className="w-full bg-gradient-to-r from-primary to-secondary text-white font-semibold shadow-premium-glow">
-                {isSubmitting ? 'Sending...' : 'Send Message'}
-                <Send className="ml-2 h-4 w-4" />
-              </Button>
-            </form>
-          )}
-        </div>
-
-        {/* Sidebar Info */}
-        <div className="space-y-6">
-          <div className="glass-panel border rounded-2xl p-8 space-y-6 shadow-sm">
-            <h3 className="font-bold text-lg text-white">Contact Info</h3>
-            
-            <div className="space-y-4">
-              <div className="flex gap-4">
-                <div className="p-2 bg-primary/10 text-primary rounded-lg h-fit">
-                  <Mail className="h-5 w-5" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-xs text-white uppercase tracking-wide">Support Desk</h4>
-                  <p className="text-xs text-muted-foreground mt-1">support@universalwebtonative.com</p>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <div className="p-2 bg-secondary/10 text-secondary rounded-lg h-fit">
-                  <MessageSquare className="h-5 w-5" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-xs text-white uppercase tracking-wide">Enterprise Relations</h4>
-                  <p className="text-xs text-muted-foreground mt-1">enterprise@universalwebtonative.com</p>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <div className="p-2 bg-primary/10 text-primary rounded-lg h-fit">
-                  <Compass className="h-5 w-5" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-xs text-white uppercase tracking-wide">Headquarters</h4>
-                  <p className="text-xs text-muted-foreground mt-1">100 Pine Street, San Francisco, CA</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="border-t border-white/5 pt-4 text-xs text-muted-foreground">
-              <p>SLA support targets: <strong>24h</strong> for Free tier, <strong>4h</strong> for Enterprise subscribers.</p>
-            </div>
+    <div className="min-h-screen pt-24 pb-20 px-4">
+      <div className="max-w-6xl mx-auto">
+          <div className="text-center space-y-4 max-w-3xl mx-auto mb-16">
+              <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">Get in touch</h1>
+              <p className="text-xl text-muted-foreground">Have questions about our platform or enterprise plans? We're here to help.</p>
           </div>
-        </div>
-      </section>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              <div className="space-y-8">
+                  <div className="glass-panel p-8 rounded-2xl border-white/10">
+                      <h2 className="text-2xl font-bold mb-6">Contact Information</h2>
+                      <div className="space-y-6">
+                          <div className="flex items-start gap-4">
+                              <div className="p-3 bg-primary/20 rounded-xl">
+                                  <Mail className="h-6 w-6 text-primary" />
+                              </div>
+                              <div>
+                                  <h3 className="font-semibold text-lg">Email Us</h3>
+                                  <p className="text-muted-foreground mb-1">Our team typically responds within 24 hours.</p>
+                                  <a href="mailto:support@uwtb.com" className="font-medium text-white hover:text-primary transition-colors">support@universal-w2n.com</a>
+                              </div>
+                          </div>
+                          <div className="flex items-start gap-4">
+                              <div className="p-3 bg-emerald-500/20 rounded-xl">
+                                  <MessageSquare className="h-6 w-6 text-emerald-500" />
+                              </div>
+                              <div>
+                                  <h3 className="font-semibold text-lg">Live Chat</h3>
+                                  <p className="text-muted-foreground mb-1">Available Monday to Friday, 9am - 5pm EST.</p>
+                                  <button className="font-medium text-white hover:text-emerald-500 transition-colors">Start a chat</button>
+                              </div>
+                          </div>
+                          <div className="flex items-start gap-4">
+                              <div className="p-3 bg-blue-500/20 rounded-xl">
+                                  <MapPin className="h-6 w-6 text-blue-500" />
+                              </div>
+                              <div>
+                                  <h3 className="font-semibold text-lg">Office</h3>
+                                  <p className="text-muted-foreground leading-relaxed">
+                                      123 Tech Lane, Innovation Park<br />
+                                      London, SW1A 1AA<br />
+                                      United Kingdom
+                                  </p>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+              <div className="glass-panel p-8 rounded-2xl border-white/10 shadow-premium-glow bg-black/20">
+                  <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+                      <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                              <Label htmlFor="firstName">First Name</Label>
+                              <Input id="firstName" placeholder="John" className="bg-background/50 border-white/10" />
+                          </div>
+                          <div className="space-y-2">
+                              <Label htmlFor="lastName">Last Name</Label>
+                              <Input id="lastName" placeholder="Doe" className="bg-background/50 border-white/10" />
+                          </div>
+                      </div>
+                      <div className="space-y-2">
+                          <Label htmlFor="email">Work Email</Label>
+                          <Input id="email" type="email" placeholder="john@company.com" className="bg-background/50 border-white/10" />
+                      </div>
+                      <div className="space-y-2">
+                          <Label htmlFor="subject">Subject</Label>
+                          <select id="subject" className="w-full h-10 px-3 bg-background/50 border border-white/10 rounded-md text-sm outline-none focus:ring-1 focus:ring-primary">
+                              <option>Sales Inquiry</option>
+                              <option>Technical Support</option>
+                              <option>Billing Question</option>
+                              <option>Partnership</option>
+                          </select>
+                      </div>
+                      <div className="space-y-2">
+                          <Label htmlFor="message">Message</Label>
+                          <Textarea id="message" placeholder="How can we help you?" className="min-h-[120px] bg-background/50 border-white/10 resize-none" />
+                      </div>
+                      <Button type="submit" className="w-full bg-gradient-to-r from-primary to-secondary text-white border-0 shadow-lg">
+                          Send Message <Send className="ml-2 h-4 w-4" />
+                      </Button>
+                  </form>
+              </div>
+          </div>
+      </div>
     </div>
   )
 }

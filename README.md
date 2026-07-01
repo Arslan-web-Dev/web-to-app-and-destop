@@ -1,7 +1,7 @@
 # Universal Web to Native Platform
 
 ## Overview
-The **Universal Web to Native** platform is a full‑stack monorepo that transforms any web application into native mobile, desktop, and progressive web app (PWA) clients. It provides a SaaS‑style workflow where users can submit a website URL, the system analyzes the site, generates platform‑specific code, builds native binaries, and stores the resulting artifacts.
+The **Universal Web to Native** platform is a production-grade full‑stack monorepo that transforms any web application into native mobile (iOS, Android), desktop (Windows, macOS, Linux), and progressive web app (PWA) clients. It provides a SaaS‑style workflow where users submit a website URL, the system analyzes the site structure using AI, generates platform‑specific wrapper code bases, builds native binaries asynchronously, and stores the resulting executable artifacts.
 
 ## Core Functionalities
 - **Web‑site analysis** – FastAPI AI service crawls the target URL, detects UI components, routes, and assets.
@@ -13,8 +13,8 @@ The **Universal Web to Native** platform is a full‑stack monorepo that transfo
 
 ## Technologies Stack
 | Layer | Technology |
-|-------|------------|
-| Front‑end | Next.js (React), TypeScript |
+|---|---|
+| Front‑end | Next.js (React), Tailwind CSS, TypeScript, TanStack Query |
 | API Gateway | NestJS, TypeScript, Prisma, PostgreSQL (Supabase) |
 | AI Service | FastAPI (Python), OpenAI / Gemini / Claude APIs |
 | Build Workers | Node.js, BullMQ, Redis |
@@ -24,6 +24,41 @@ The **Universal Web to Native** platform is a full‑stack monorepo that transfo
 | CI/CD | GitHub Actions, Vercel |
 | Database | PostgreSQL (hosted on Supabase) |
 | Auth | Supabase Auth, JWT |
+
+## Frontend Portal Pages & Routes
+
+The Next.js web application is located under `apps/web` and includes the following fully routed and functional dashboard pages:
+
+### Authentication Pages
+* **Login (`/login`)** — [login/page.tsx](file:///d:/github%20project/web-to-app-and-destop/apps/web/src/app/(auth)/login/page.tsx)
+  * Supports email/password credentials authentication and OAuth authentication via Google.
+  * Dynamically queries user state and session cookies.
+
+### Dashboard Pages (Protected Routes)
+All pages are located under the dashboard routing context:
+* **Main Dashboard (`/dashboard`)** — [dashboard/page.tsx](file:///d:/github%20project/web-to-app-and-destop/apps/web/src/app/dashboard/page.tsx)
+  * Visualizes platform stats (total projects, builds, completed/pending compilations).
+  * Lists recent active projects, active build jobs, quick actions, and recent user notification activity logs.
+* **Projects Manager (`/dashboard/projects`)** — [dashboard/projects/page.tsx](file:///d:/github%20project/web-to-app-and-destop/apps/web/src/app/dashboard/projects/page.tsx)
+  * View, filter, and search active projects.
+  * Open the **Create Project Dialog** to scan a new website URL, upload a project zip, or connect a GitHub repository.
+* **Project Details (`/dashboard/projects/[projectId]`)** — [dashboard/projects/[projectId]/page.tsx](file:///d:/github%20project/web-to-app-and-destop/apps/web/src/app/dashboard/projects/%5BprojectId%5D/page.tsx)
+  * Detailed breakdown of a specific project's parameters.
+  * Real-time build history tracking for iOS, Android, and Desktop platforms.
+  * Direct artifact download buttons for compiled executables.
+* **AI Analysis Report (`/dashboard/projects/[projectId]/analysis`)** — [dashboard/projects/[projectId]/analysis/page.tsx](file:///d:/github%20project/web-to-app-and-destop/apps/web/src/app/dashboard/projects/%5BprojectId%5D/analysis/page.tsx)
+  * Comprehensive AI audit logs showing framework indicators, layout responsiveness, deep linking setup, and custom PWA manifests.
+  * Highlights automated AI-generated security scanning and architecture recommendations.
+* **Builds History (`/dashboard/builds`)** — [dashboard/builds/page.tsx](file:///d:/github%20project/web-to-app-and-destop/apps/web/src/app/dashboard/builds/page.tsx)
+  * Global history of all native package compilation outputs, tracking platform targets, compilation durations, progress ratios, and current build status.
+* **Team Management (`/dashboard/team`)** — [dashboard/team/page.tsx](file:///d:/github%20project/web-to-app-and-destop/apps/web/src/app/dashboard/team/page.tsx)
+  * View collaborative members in the organization, assign roles (Owner, Admin, Developer), check invitation statuses, and invite new members.
+* **Billing & Quotas (`/dashboard/billing`)** — [dashboard/billing/page.tsx](file:///d:/github%20project/web-to-app-and-destop/apps/web/src/app/dashboard/billing/page.tsx)
+  * Displays details on active subscription tiers (Professional/Business/Enterprise).
+  * Monitored quota usages for build credits, AI scanners, and project counts.
+  * Manage active credit cards and upgrade subscription plans.
+* **Account Settings (`/dashboard/settings`)** — [dashboard/settings/page.tsx](file:///d:/github%20project/web-to-app-and-destop/apps/web/src/app/dashboard/settings/page.tsx)
+  * Update general user profile details, change login passwords, toggles, and generate API developer tokens for pipeline scripts.
 
 ## Architecture Diagram
 ```mermaid
@@ -70,4 +105,4 @@ npm run dev
 We welcome contributions! Please fork the repo, create a feature branch, and submit a pull request. Follow the linting and testing scripts defined in `package.json`.
 
 ---
-*Generated by Antigravity AI Assistant*
+*Enhanced & Maintained by Antigravity AI Assistant*

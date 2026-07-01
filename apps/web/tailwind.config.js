@@ -48,6 +48,10 @@ module.exports = {
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
       },
+      boxShadow: {
+        'premium-glow': '0 0 50px -12px rgba(168, 85, 247, 0.25)',
+        'mint-glow': '0 0 50px -12px rgba(16, 185, 129, 0.25)',
+      },
       keyframes: {
         'accordion-down': {
           from: { height: '0' },
@@ -57,10 +61,15 @@ module.exports = {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' },
         },
+        'float': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'float': 'float 6s ease-in-out infinite',
       },
     },
   },

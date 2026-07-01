@@ -3,11 +3,13 @@ import { cn } from '@/lib/utils';
 
 export const Badge = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & { variant?: 'default' | 'secondary' }
+  React.HTMLAttributes<HTMLDivElement> & { variant?: 'default' | 'secondary' | 'outline' | 'destructive' }
 >(({ className, variant = 'default', ...props }, ref) => {
-  const variantClasses = {
+  const variantClasses: Record<string, string> = {
     default: 'bg-primary text-primary-foreground',
     secondary: 'bg-muted text-muted-foreground',
+    outline: 'border border-input bg-transparent text-foreground',
+    destructive: 'bg-destructive text-destructive-foreground',
   };
   return (
     <div

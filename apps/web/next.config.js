@@ -1,22 +1,17 @@
-// next.config.js – converted from TypeScript version for Vercel compatibility
+// next.config.js – single config file for Vercel
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: false,
   images: {
-    domains: ['localhost', '*.supabase.co', '*.universalwebtonative.com'],
+    remotePatterns: [
+      { protocol: 'https', hostname: '*.supabase.co' },
+      { protocol: 'https', hostname: '*.universalwebtonative.com' },
+      { protocol: 'http', hostname: 'localhost' },
+    ],
     formats: ['image/avif', 'image/webp'],
   },
   experimental: {
     serverActions: { bodySizeLimit: '10mb' },
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
-      },
-    },
   },
   async headers() {
     return [

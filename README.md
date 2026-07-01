@@ -119,8 +119,34 @@ npm run db:push
 npm run dev
 ```
 
-## Contributing
-We welcome contributions! Please fork the repo, create a feature branch, and submit a pull request. Follow the linting and testing scripts defined in `package.json`.
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. **Fork** the repository.
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Make your changes and ensure they pass linting: `npm run lint`
+4. Open a **Pull Request** with a clear description of the change.
+5. Ensure the CI workflow passes before merging.
+
+Read the full guidelines in [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ---
-*Enhanced & Maintained by Antigravity AI Assistant*
+
+## 📄 License
+
+This project is licensed under the **MIT License** – see the [LICENSE](./LICENSE) file for details.
+
+---
+
+## 📞 Contact
+
+Feel free to reach out via:
+
+- 📧 **Email:** [muhammadarslan.cs.web@gmail.com](mailto:muhammadarslan.cs.web@gmail.com)
+- 💼 **LinkedIn:** [linkedin.com/in/muhammadarslan](https://linkedin.com/in/muhammadarslan)
+- 🐦 **Twitter:** [twitter.com/muhammadarslan](https://twitter.com/muhammadarslan)
+
+---
+
+*Enhanced & Maintained by [Muhammad Arslan](https://linkedin.com/in/muhammadarslan)*

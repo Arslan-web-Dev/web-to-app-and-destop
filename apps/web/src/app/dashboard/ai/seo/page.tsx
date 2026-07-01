@@ -1,7 +1,7 @@
 'use client'
 
 import { Badge } from '@/components/ui/badge'
-import { Search, Globe, Image as ImageIcon, Heading, FileText, CheckCircle2, XCircle } from 'lucide-react'
+import { Search, Globe, Image as ImageIcon, Heading, FileText, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react'
 
 export default function SEOAnalysisPage() {
   return (

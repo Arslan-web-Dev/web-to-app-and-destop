@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ArrowLeft, Globe, Sparkles, Smartphone, Monitor } from 'lucide-react'
+import { ProjectCreationJourney } from '@/components/projects/ProjectCreationJourney'
 
 export default function CreateProjectPage() {
   const [url, setUrl] = useState('')
@@ -32,6 +33,8 @@ export default function CreateProjectPage() {
           </p>
         </div>
       </div>
+
+      <ProjectCreationJourney />
 
       <div className="glass-panel rounded-2xl p-6 md:p-8 space-y-8 shadow-premium-glow">
         <form onSubmit={handleScan} className="space-y-6">

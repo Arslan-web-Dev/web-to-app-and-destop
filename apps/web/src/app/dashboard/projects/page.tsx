@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Search, Grid3X3, List } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
+import { EmptyState } from '@/components/ui/empty-state'
+import { FolderPlus } from 'lucide-react'
 
 export default function ProjectsPage() {
   const { data: projects, isLoading } = useProjects()
@@ -66,9 +68,12 @@ export default function ProjectsPage() {
           ))}
         </div>
       ) : filteredProjects?.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">No projects found</p>
-        </div>
+        <EmptyState
+          title="No projects yet"
+          description="Create your first project to start generating native apps from a website or repository."
+          icon={<FolderPlus className="h-6 w-6" />}
+          action={<CreateProjectDialog />}
+        />
       ) : (
         <div className={viewMode === 'grid' 
           ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"

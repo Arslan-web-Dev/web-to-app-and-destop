@@ -3,6 +3,7 @@ import { RecentProjects } from '@/components/dashboard/RecentProjects'
 import { RecentBuilds } from '@/components/dashboard/RecentBuilds'
 import { QuickActions } from '@/components/dashboard/QuickActions'
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed'
+import { WelcomePanel } from '@/components/dashboard/WelcomePanel'
 
 export default function DashboardPage() {
   return (
@@ -14,6 +15,7 @@ export default function DashboardPage() {
         </p>
       </div>
 
+      <WelcomePanel />
       <StatsCards />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

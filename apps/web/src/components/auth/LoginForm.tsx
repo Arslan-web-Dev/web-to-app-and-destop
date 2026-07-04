@@ -22,6 +22,7 @@ export function LoginForm() {
       const { error } = await supabaseClient.auth.signInWithPassword({ email, password })
       if (error) throw error
       router.push('/dashboard')
+      router.refresh()
     } catch (err: unknown) {
       toast({
         title: 'Login failed',

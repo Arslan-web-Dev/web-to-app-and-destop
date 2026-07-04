@@ -19,10 +19,12 @@ export function LoginForm() {
     e.preventDefault()
     setIsLoading(true)
     try {
-      const { error } = await supabaseClient.auth.signInWithPassword({ email, password })
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password })
       if (error) throw error
-      router.push('/dashboard')
-      router.refresh()
+      if (!data.session) {
+        throw new Error('Unable to establish a session. Please try again.')
+      }
+      await router.push('/dashboard')
     } catch (err: unknown) {
       toast({
         title: 'Login failed',
